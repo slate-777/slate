@@ -426,7 +426,8 @@
     }
 }
 
-/ * Lab Management Modal */ .modal-overlay {
+/* Lab Management Modal */
+.modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
