@@ -1,57 +1,51 @@
-const express = require('express');
-const cors = require('cors');
-const dotenv = require('dotenv');
-const path = require('path');
-const fs = require('fs');
+const express = require("express");
+const cors = require("cors");
+const dotenv = require("dotenv");
+const path = require("path");
+const fs = require("fs");
 
-// Load env variables
+// =============================
+// Load environment variables
+// =============================
 dotenv.config();
 
 const app = express();
 
-// -----------------------------
-// ✔ Allowed Origins
-// -----------------------------
+// =============================
+// CORS CONFIG (ONLY PLACE)
+// =============================
 const allowedOrigins = [
-    "https://slate-app.eslate.info",   // Production
-    "http://localhost:3000",           // Local development
+    "https://slate-app.eslate.info",
+    "http://localhost:3000"
 ];
 
-// -----------------------------
-// ✔ CORS Middleware
-// -----------------------------
 app.use(cors({
-    origin: function (origin, callback) {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            console.log("❌ CORS BLOCKED ORIGIN:", origin);
-            callback(new Error("Not allowed by CORS"));
+    origin: (origin, callback) => {
+        // Allow server-to-server & tools like Postman
+        if (!origin) return callback(null, true);
+
+        if (allowedOrigins.includes(origin)) {
+            return callback(null, true);
         }
+
+        return callback(new Error("CORS not allowed"));
     },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
-app.options("*", cors());
+// ❌ DO NOT ADD app.options("*", cors())
+// ❌ DO NOT ADD manual CORS headers anywhere else
 
-// -----------------------------
-// Additional Headers (CORS is handled by cors middleware above)
-// -----------------------------
-app.use((req, res, next) => {
-    // Don't set CORS headers here - they're already set by cors() middleware
-    // Only set additional headers if needed
-    next();
-});
-
-// -----------------------------
-// JSON Body
-// -----------------------------
+// =============================
+// JSON Body Parser
+// =============================
 app.use(express.json());
 
-// -----------------------------
-// Uploads
-// -----------------------------
+// =============================
+// Uploads (Static Files)
+// =============================
 const uploadsPath = path.isAbsolute(process.env.DOCS_UPLOADS_PATH)
     ? process.env.DOCS_UPLOADS_PATH
     : path.join(__dirname, process.env.DOCS_UPLOADS_PATH);
@@ -71,28 +65,28 @@ app.use("/uploads", (req, res) => {
     }
 });
 
-// -----------------------------
+// =============================
 // Routes
-// -----------------------------
-app.use('/auth', require('./routes/auth'));
-app.use('/tags', require('./routes/tags'));
-app.use('/upload', require('./routes/upload'));
-app.use('/settings', require('./routes/settings'));
-app.use('/artifacts', require('./routes/artifacts'));
-app.use('/schools', require('./routes/schools'));
-app.use('/labs', require('./routes/labs'));
-app.use('/equipments', require('./routes/equipments'));
-app.use('/sessions', require('./routes/sessions'));
-app.use('/users', require('./routes/users'));
-app.use('/reports', require('./routes/reports'));
-app.use('/sathee-students', require('./routes/satheeStudents'));
-app.use('/grievances', require('./routes/grievances'));
+// =============================
+app.use("/auth", require("./routes/auth"));
+app.use("/tags", require("./routes/tags"));
+app.use("/upload", require("./routes/upload"));
+app.use("/settings", require("./routes/settings"));
+app.use("/artifacts", require("./routes/artifacts"));
+app.use("/schools", require("./routes/schools"));
+app.use("/labs", require("./routes/labs"));
+app.use("/equipments", require("./routes/equipments"));
+app.use("/sessions", require("./routes/sessions"));
+app.use("/users", require("./routes/users"));
+app.use("/reports", require("./routes/reports"));
+app.use("/sathee-students", require("./routes/satheeStudents"));
+app.use("/grievances", require("./routes/grievances"));
 
-// -----------------------------
+// =============================
 // Start Server
-// -----------------------------
+// =============================
 const PORT = process.env.PORT || 4623;
 
 app.listen(PORT, () => {
-    console.log(`SERVER RUNNING ON PORT ${PORT}`);
+    console.log(`✅ SERVER RUNNING ON PORT ${PORT}`);
 });
