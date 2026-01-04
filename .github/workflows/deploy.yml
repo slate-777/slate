@@ -21,7 +21,7 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: 22
           script: |
-            cd /var/www/slate
+            cd /var/www/slate-github
             
             # Pull latest changes
             git pull origin main
@@ -36,6 +36,6 @@ jobs:
             npm run build
             
             # Restart the server using PM2
-            pm2 restart slate-server || pm2 start server.js --name slate-server
+            pm2 restart slate-api --update-env
             
             echo "Deployment completed successfully!"
