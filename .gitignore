@@ -1,0 +1,62 @@
+# Dependencies
+node_modules/
+*/node_modules/
+Client/node_modules/
+Server/node_modules/
+
+# Environment files
+.env
+*.env
+.env.local
+.env.development
+.env.test
+.env.production
+Client/.env
+Server/.env
+
+# SQL files
+*.sql
+
+# Build outputs
+build/
+dist/
+Client/build/
+Server/dist/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Coverage
+coverage/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Package lock files (optional - uncomment if needed)
+# package-lock.json
+# yarn.lock
+
+# Documentation files (optional)
+*.md
+!README.md
+
+# Test files
+*.test.js
+*.spec.js

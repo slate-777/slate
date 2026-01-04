@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Test Latest Sessions Endpoint</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        button {
+            background: #007BFF;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        .success {
+            border-left: 4px solid #28a745;
+        }
+
+        .error {
+            border-left: 4px solid #dc3545;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .info {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border-left: 4px solid #007BFF;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🧪 Test Latest Sessions Endpoint</h1>
+
+        <div class="info">
+            <strong>Note:</strong> Make sure you're logged in to your app first, then click the test button below.
+        </div>
+
+        <button onclick="testEndpoint()">🚀 Test Endpoint</button>
+        <button onclick="clearResult()">🗑️ Clear</button>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        function testEndpoint() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = '⏳ Testing endpoint...';
+            resultDiv.className = '';
+
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                resultDiv.textContent = '❌ ERROR: No token found!\n\nPlease:\n1. Open your main app (http://localhost:3000)\n2. Log in\n3. Come back to this page\n4. Try again';
+                resultDiv.className = 'error';
+                return;
+            }
+
+            fetch('http://localhost:4623/sessions/fetchLatestSessions?limit=5', {
+                headers: {
+                    'Authorization': token
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    resultDiv.textContent = '✅ SUCCESS!\n\n' + JSON.stringify(data, null, 2);
+                    resultDiv.className = 'success';
+
+                    if (data.data && data.data.length > 0) {
+                        console.log('✅ Latest Sessions:', data.data);
+                    } else {
+                        resultDiv.textContent += '\n\n⚠️ Note: No sessions found in database. Create a session first!';
+                    }
+                })
+                .catch(error => {
+                    resultDiv.textContent = '❌ ERROR:\n\n' + error.message + '\n\nDetails:\n' + error.stack;
+                    resultDiv.className = 'error';
+                    console.error('Error:', error);
+                });
+        }
+
+        function clearResult() {
+            document.getElementById('result').textContent = '';
+            document.getElementById('result').className = '';
+        }
+
+        // Auto-test on load if token exists
+        window.onload = function () {
+            const token = localStorage.getItem('token');
+            if (token) {
+                document.getElementById('result').textContent = '✅ Token found! Click "Test Endpoint" to verify the API.';
+                document.getElementById('result').className = 'success';
+            } else {
+                document.getElementById('result').textContent = '⚠️ No token found. Please log in to your app first.';
+            }
+        };
+    </script>
+</body>
+
+</html>
