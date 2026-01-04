@@ -169,36 +169,36 @@ const ManageGrievances = () => {
             </header>
 
             {/* Stats Cards */}
-            <div className="stats-grid">
-                <div className="stat-card total">
+            <div className="grievance-stats-grid">
+                <div className="grievance-stat-card total">
                     <div className="stat-icon"><i className='bx bx-list-ul'></i></div>
                     <div className="stat-info">
                         <span className="stat-value">{stats.total}</span>
                         <span className="stat-label">Total Grievances</span>
                     </div>
                 </div>
-                <div className="stat-card pending">
+                <div className="grievance-stat-card pending">
                     <div className="stat-icon"><i className='bx bx-time'></i></div>
                     <div className="stat-info">
                         <span className="stat-value">{stats.pending}</span>
                         <span className="stat-label">Pending</span>
                     </div>
                 </div>
-                <div className="stat-card progress">
+                <div className="grievance-stat-card progress">
                     <div className="stat-icon"><i className='bx bx-loader'></i></div>
                     <div className="stat-info">
                         <span className="stat-value">{stats.inProgress}</span>
                         <span className="stat-label">In Progress</span>
                     </div>
                 </div>
-                <div className="stat-card resolved">
+                <div className="grievance-stat-card resolved">
                     <div className="stat-icon"><i className='bx bx-check-circle'></i></div>
                     <div className="stat-info">
                         <span className="stat-value">{stats.resolved}</span>
                         <span className="stat-label">Resolved</span>
                     </div>
                 </div>
-                <div className="stat-card critical">
+                <div className="grievance-stat-card critical">
                     <div className="stat-icon"><i className='bx bx-error'></i></div>
                     <div className="stat-info">
                         <span className="stat-value">{stats.critical}</span>

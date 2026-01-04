@@ -74,26 +74,26 @@
 }
 
 /* Stats Grid */
-.stats-grid {
+.grievance-stats-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 20px;
     margin-bottom: 28px;
 }
 
-.stat-card {
+.grievance-stat-card {
     background: #ffffff;
     border-radius: 10px;
     padding: 22px;
     display: flex;
     align-items: center;
     gap: 16px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid #e2e8f0 !important;
     transition: all 0.2s;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
 }
 
-.stat-card:hover {
+.grievance-stat-card:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     transform: translateY(-2px);
 }
@@ -108,27 +108,27 @@
     font-size: 22px;
 }
 
-.stat-card.total .stat-icon {
+.grievance-stat-card.total .stat-icon {
     background: #e0e7ff;
     color: #4f46e5;
 }
 
-.stat-card.pending .stat-icon {
-    background: #fef3c7;
-    color: #d97706;
+.grievance-stat-card.pending .stat-icon {
+    background: #f1f5f9 !important;
+    color: #64748b !important;
 }
 
-.stat-card.progress .stat-icon {
+.grievance-stat-card.progress .stat-icon {
     background: #ede9fe;
     color: #7c3aed;
 }
 
-.stat-card.resolved .stat-icon {
+.grievance-stat-card.resolved .stat-icon {
     background: #d1fae5;
     color: #059669;
 }
 
-.stat-card.critical .stat-icon {
+.grievance-stat-card.critical .stat-icon {
     background: #fee2e2;
     color: #dc2626;
 }
@@ -321,8 +321,8 @@
 }
 
 .status-pending {
-    background: #fef3c7;
-    color: #92400e;
+    background: #f1f5f9 !important;
+    color: #475569 !important;
 }
 
 .status-progress {
@@ -640,13 +640,13 @@
 
 /* Responsive Design */
 @media (max-width: 1200px) {
-    .stats-grid {
+    .grievance-stats-grid {
         grid-template-columns: repeat(3, 1fr);
     }
 }
 
 @media (max-width: 992px) {
-    .stats-grid {
+    .grievance-stats-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 
@@ -669,12 +669,12 @@
         align-items: flex-start;
     }
 
-    .stats-grid {
+    .grievance-stats-grid {
         grid-template-columns: 1fr 1fr;
         gap: 12px;
     }
 
-    .stat-card {
+    .grievance-stat-card {
         padding: 16px;
     }
 
@@ -704,11 +704,11 @@
 }
 
 @media (max-width: 480px) {
-    .stats-grid {
+    .grievance-stats-grid {
         grid-template-columns: 1fr;
     }
 
-    .stat-card {
+    .grievance-stat-card {
         padding: 14px;
     }
 
