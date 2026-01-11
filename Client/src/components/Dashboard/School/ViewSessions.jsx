@@ -162,7 +162,7 @@ const ViewSessions = ({ role, showAllEntities }) => {
                                                 <td>{item.session_setup_by_email}</td>
                                                 <td>
                                                     {images.length > 0 ? (
-                                                        <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
+                                                        <div style={{ display: 'flex', gap: '5px', alignItems: 'center', flexWrap: 'wrap' }}>
                                                             <img
                                                                 src={images[0]}
                                                                 alt="Session"
@@ -192,6 +192,44 @@ const ViewSessions = ({ role, showAllEntities }) => {
                                                                     +{images.length - 1} more
                                                                 </button>
                                                             )}
+                                                            <button
+                                                                onClick={async (e) => {
+                                                                    e.stopPropagation();
+                                                                    for (let idx = 0; idx < images.length; idx++) {
+                                                                        try {
+                                                                            const response = await fetch(images[idx]);
+                                                                            const blob = await response.blob();
+                                                                            const url = window.URL.createObjectURL(blob);
+                                                                            const link = document.createElement('a');
+                                                                            link.href = url;
+                                                                            link.download = `${item.session_title?.replace(/[^a-zA-Z0-9]/g, '_') || 'session'}_image_${idx + 1}.jpg`;
+                                                                            document.body.appendChild(link);
+                                                                            link.click();
+                                                                            document.body.removeChild(link);
+                                                                            window.URL.revokeObjectURL(url);
+                                                                            await new Promise(resolve => setTimeout(resolve, 300));
+                                                                        } catch (error) {
+                                                                            console.error('Error downloading image:', error);
+                                                                            window.open(images[idx], '_blank');
+                                                                        }
+                                                                    }
+                                                                }}
+                                                                title="Download All Images"
+                                                                style={{
+                                                                    background: '#10b981',
+                                                                    color: 'white',
+                                                                    border: 'none',
+                                                                    borderRadius: '5px',
+                                                                    padding: '5px 10px',
+                                                                    cursor: 'pointer',
+                                                                    fontSize: '12px',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    gap: '4px'
+                                                                }}
+                                                            >
+                                                                <i className='bx bx-download'></i> Download
+                                                            </button>
                                                         </div>
                                                     ) : (
                                                         <span style={{ color: '#999' }}>No images</span>
@@ -364,6 +402,91 @@ const ViewSessions = ({ role, showAllEntities }) => {
                                 {currentImageIndex + 1} / {currentImages.length}
                             </div>
                         )}
+
+                        {/* Download buttons */}
+                        <div
+                            style={{
+                                position: 'absolute',
+                                bottom: currentImages.length > 1 ? '-90px' : '-50px',
+                                left: '50%',
+                                transform: 'translateX(-50%)',
+                                display: 'flex',
+                                gap: '10px'
+                            }}
+                        >
+                            <button
+                                onClick={async () => {
+                                    try {
+                                        const response = await fetch(currentImages[currentImageIndex]);
+                                        const blob = await response.blob();
+                                        const url = window.URL.createObjectURL(blob);
+                                        const link = document.createElement('a');
+                                        link.href = url;
+                                        link.download = `session_image_${currentImageIndex + 1}.jpg`;
+                                        document.body.appendChild(link);
+                                        link.click();
+                                        document.body.removeChild(link);
+                                        window.URL.revokeObjectURL(url);
+                                    } catch (error) {
+                                        console.error('Error downloading image:', error);
+                                        window.open(currentImages[currentImageIndex], '_blank');
+                                    }
+                                }}
+                                style={{
+                                    background: '#10b981',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '8px',
+                                    padding: '10px 20px',
+                                    cursor: 'pointer',
+                                    fontSize: '14px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '6px',
+                                    fontWeight: '500'
+                                }}
+                            >
+                                <i className='bx bx-download'></i> Download This
+                            </button>
+                            {currentImages.length > 1 && (
+                                <button
+                                    onClick={async () => {
+                                        for (let idx = 0; idx < currentImages.length; idx++) {
+                                            try {
+                                                const response = await fetch(currentImages[idx]);
+                                                const blob = await response.blob();
+                                                const url = window.URL.createObjectURL(blob);
+                                                const link = document.createElement('a');
+                                                link.href = url;
+                                                link.download = `session_image_${idx + 1}.jpg`;
+                                                document.body.appendChild(link);
+                                                link.click();
+                                                document.body.removeChild(link);
+                                                window.URL.revokeObjectURL(url);
+                                                await new Promise(resolve => setTimeout(resolve, 300));
+                                            } catch (error) {
+                                                console.error('Error downloading image:', error);
+                                            }
+                                        }
+                                    }}
+                                    style={{
+                                        background: '#3b82f6',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '8px',
+                                        padding: '10px 20px',
+                                        cursor: 'pointer',
+                                        fontSize: '14px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '6px',
+                                        fontWeight: '500'
+                                    }}
+                                >
+                                    <i className='bx bx-download'></i> Download All ({currentImages.length})
+                                </button>
+                            )}
+                        </div>
                     </div>
                 </div>
             )}
