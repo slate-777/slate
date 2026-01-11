@@ -1,9 +1,24 @@
 const mysql = require("mysql2");
 const path = require("path");
-require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
+const fs = require("fs");
 
-// Create a connection pool instead of single connection
-// Pool automatically handles reconnection and connection management
+// Load .env from Server directory
+const envPath = path.resolve(__dirname, '..', '.env');
+if (fs.existsSync(envPath)) {
+    require('dotenv').config({ path: envPath });
+} else {
+    console.error('Warning: .env file not found at', envPath);
+}
+
+// Debug: Log what we're using (remove in production)
+console.log('DB Config:', {
+    host: process.env.HOST || 'localhost',
+    user: process.env.USER || 'root',
+    database: process.env.DATABASE || 'slate_db',
+    hasPassword: !!process.env.PASSWORD
+});
+
+// Create a connection pool
 const pool = mysql.createPool({
     host: process.env.HOST || 'localhost',
     user: process.env.USER || 'root',
@@ -14,30 +29,20 @@ const pool = mysql.createPool({
     connectionLimit: 10,
     queueLimit: 0,
     enableKeepAlive: true,
-    keepAliveInitialDelay: 10000, // 10 seconds
-    // Handle disconnection automatically
-    idleTimeout: 60000, // 60 seconds idle timeout
+    keepAliveInitialDelay: 10000,
+    idleTimeout: 60000,
 });
 
 // Test the connection
 pool.getConnection((err, connection) => {
     if (err) {
         console.error('Error connecting to the database:', err.message);
-        if (err.code === 'PROTOCOL_CONNECTION_LOST') {
-            console.error('Database connection was closed.');
-        }
-        if (err.code === 'ER_CON_COUNT_ERROR') {
-            console.error('Database has too many connections.');
-        }
-        if (err.code === 'ECONNREFUSED') {
-            console.error('Database connection was refused.');
-        }
         if (err.code === 'ER_ACCESS_DENIED_ERROR') {
-            console.error('Access denied. Check your database credentials.');
+            console.error('Access denied. Check your database credentials in .env file.');
         }
     }
     if (connection) {
-        console.log("MYSQL CONNECTED");
+        console.log("✅ MYSQL CONNECTED");
         connection.release();
     }
 });
@@ -47,5 +52,4 @@ pool.on('error', (err) => {
     console.error('Database pool error:', err.message);
 });
 
-// Export the pool with promise support
 module.exports = pool;
