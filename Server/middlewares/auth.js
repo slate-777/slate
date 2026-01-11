@@ -1,11 +1,10 @@
 const jwt = require("jsonwebtoken");
 
-// Secret key
-const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
-
 // Middleware to verify user token
 const verifyUser = (req, res, next) => {
     const token = req.headers["authorization"];
+    const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY; // Get at runtime
+
     if (!token) {
         return res.json({ status: 'fail', message: "You are not authorized" });
     } else {

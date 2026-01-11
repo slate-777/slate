@@ -1,7 +1,9 @@
 const authService = require('../services/authService');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
+
+// Get secret key at runtime (not at module load time)
+const getSecretKey = () => process.env.JWT_SECRET_KEY;
 
 exports.createUser = async (req, res) => {
     const { fname, lname, email, phone, userType, state, assignedLab } = req.body;
@@ -62,7 +64,7 @@ exports.login = async (req, res) => {
             state: user.state || null,
             role_id: user.role_id,
             assignedLab: user.assigned_lab_id || null
-        }, JWT_SECRET_KEY, { expiresIn: '100d' }, async (err, token) => {
+        }, getSecretKey(), { expiresIn: '100d' }, async (err, token) => {
             if (err) {
                 console.error('JWT Error:', err);
                 return res.json({ error: "Token generation failed" });
