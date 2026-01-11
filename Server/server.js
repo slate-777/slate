@@ -62,12 +62,19 @@ app.use("/uploads", (req, res) => {
         const decodedPath = decodeURIComponent(req.path);
         const filePath = path.join(uploadsPath, decodedPath);
 
+        console.log('=== File Request ===');
+        console.log('Uploads Path:', uploadsPath);
+        console.log('Requested:', decodedPath);
+        console.log('Full Path:', filePath);
+        console.log('Exists:', fs.existsSync(filePath));
+
         if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
             return res.sendFile(filePath);
         }
 
         return res.status(404).send("File not found");
     } catch (error) {
+        console.error('Upload error:', error);
         return res.status(500).send("Error processing request");
     }
 });
