@@ -551,18 +551,29 @@ const Home = ({ handleClick, setIsSidebarOpen }) => {
                                                     <i className='bx bx-show' style={{ fontSize: '24px', color: 'white' }}></i>
                                                 </button>
                                                 <button
-                                                    onClick={(e) => {
+                                                    onClick={async (e) => {
                                                         e.stopPropagation();
                                                         const images = JSON.parse(session.session_images);
-                                                        images.forEach((imgUrl, idx) => {
-                                                            const link = document.createElement('a');
-                                                            link.href = imgUrl;
-                                                            link.download = `${session.session_title.replace(/[^a-zA-Z0-9]/g, '_')}_image_${idx + 1}.jpg`;
-                                                            link.target = '_blank';
-                                                            document.body.appendChild(link);
-                                                            link.click();
-                                                            document.body.removeChild(link);
-                                                        });
+                                                        for (let idx = 0; idx < images.length; idx++) {
+                                                            try {
+                                                                const response = await fetch(images[idx]);
+                                                                const blob = await response.blob();
+                                                                const url = window.URL.createObjectURL(blob);
+                                                                const link = document.createElement('a');
+                                                                link.href = url;
+                                                                link.download = `${session.session_title.replace(/[^a-zA-Z0-9]/g, '_')}_image_${idx + 1}.jpg`;
+                                                                document.body.appendChild(link);
+                                                                link.click();
+                                                                document.body.removeChild(link);
+                                                                window.URL.revokeObjectURL(url);
+                                                                // Small delay between downloads
+                                                                await new Promise(resolve => setTimeout(resolve, 300));
+                                                            } catch (error) {
+                                                                console.error('Error downloading image:', error);
+                                                                // Fallback: open in new tab
+                                                                window.open(images[idx], '_blank');
+                                                            }
+                                                        }
                                                     }}
                                                     title="Download All Images"
                                                     style={{
