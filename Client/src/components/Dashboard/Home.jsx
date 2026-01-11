@@ -526,6 +526,7 @@ const Home = ({ handleClick, setIsSidebarOpen }) => {
                                                 )}
                                                 <button
                                                     onClick={() => openImageViewer(JSON.parse(session.session_images))}
+                                                    title="View Images"
                                                     style={{
                                                         background: 'rgba(255,255,255,0.2)',
                                                         border: '2px solid rgba(255,255,255,0.3)',
@@ -548,6 +549,44 @@ const Home = ({ handleClick, setIsSidebarOpen }) => {
                                                     }}
                                                 >
                                                     <i className='bx bx-show' style={{ fontSize: '24px', color: 'white' }}></i>
+                                                </button>
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        const images = JSON.parse(session.session_images);
+                                                        images.forEach((imgUrl, idx) => {
+                                                            const link = document.createElement('a');
+                                                            link.href = imgUrl;
+                                                            link.download = `${session.session_title.replace(/[^a-zA-Z0-9]/g, '_')}_image_${idx + 1}.jpg`;
+                                                            link.target = '_blank';
+                                                            document.body.appendChild(link);
+                                                            link.click();
+                                                            document.body.removeChild(link);
+                                                        });
+                                                    }}
+                                                    title="Download All Images"
+                                                    style={{
+                                                        background: 'rgba(16, 185, 129, 0.8)',
+                                                        border: '2px solid rgba(255,255,255,0.3)',
+                                                        borderRadius: '8px',
+                                                        width: '60px',
+                                                        height: '60px',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        cursor: 'pointer',
+                                                        transition: 'all 0.3s ease'
+                                                    }}
+                                                    onMouseEnter={(e) => {
+                                                        e.currentTarget.style.background = 'rgba(16, 185, 129, 1)';
+                                                        e.currentTarget.style.transform = 'scale(1.05)';
+                                                    }}
+                                                    onMouseLeave={(e) => {
+                                                        e.currentTarget.style.background = 'rgba(16, 185, 129, 0.8)';
+                                                        e.currentTarget.style.transform = 'scale(1)';
+                                                    }}
+                                                >
+                                                    <i className='bx bx-download' style={{ fontSize: '24px', color: 'white' }}></i>
                                                 </button>
                                             </div>
                                         )}
