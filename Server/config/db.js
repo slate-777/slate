@@ -11,19 +11,20 @@ if (fs.existsSync(envPath)) {
 }
 
 // Debug: Log what we're using (remove in production)
-console.log('DB Config:', {
-    host: process.env.HOST || 'localhost',
-    user: process.env.USER || 'root',
-    database: process.env.DATABASE || 'slate_db',
-    hasPassword: !!process.env.PASSWORD
-});
+console.log('=== DB Config Debug ===');
+console.log('ENV Path:', envPath);
+console.log('DB_HOST:', process.env.DB_HOST || process.env.HOST || 'localhost');
+console.log('DB_USER:', process.env.DB_USER || process.env.USER);
+console.log('DB_NAME:', process.env.DB_NAME || process.env.DATABASE || 'slate_db');
+console.log('Has Password:', !!(process.env.DB_PASSWORD || process.env.PASSWORD));
+console.log('=======================');
 
-// Create a connection pool
+// Create a connection pool - Use DB_ prefixed vars first, fallback to old names
 const pool = mysql.createPool({
-    host: process.env.HOST || 'localhost',
-    user: process.env.USER || 'root',
-    password: process.env.PASSWORD || '',
-    database: process.env.DATABASE || 'slate_db',
+    host: process.env.DB_HOST || process.env.HOST || 'localhost',
+    user: process.env.DB_USER || process.env.USER || 'root',
+    password: process.env.DB_PASSWORD || process.env.PASSWORD || '',
+    database: process.env.DB_NAME || process.env.DATABASE || 'slate_db',
     timezone: '+05:30',
     waitForConnections: true,
     connectionLimit: 10,
