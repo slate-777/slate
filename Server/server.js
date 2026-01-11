@@ -46,9 +46,16 @@ app.use(express.json());
 // =============================
 // Uploads (Static Files)
 // =============================
-const uploadsPath = path.isAbsolute(process.env.DOCS_UPLOADS_PATH)
-    ? process.env.DOCS_UPLOADS_PATH
-    : path.join(__dirname, process.env.DOCS_UPLOADS_PATH);
+const defaultUploadsPath = './uploads';
+const configuredPath = process.env.DOCS_UPLOADS_PATH || defaultUploadsPath;
+const uploadsPath = path.isAbsolute(configuredPath)
+    ? configuredPath
+    : path.join(__dirname, configuredPath);
+
+// Create uploads directory if it doesn't exist
+if (!fs.existsSync(uploadsPath)) {
+    fs.mkdirSync(uploadsPath, { recursive: true });
+}
 
 app.use("/uploads", (req, res) => {
     try {
