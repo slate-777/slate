@@ -1,12 +1,13 @@
 const mysql = require("mysql2");
+require('dotenv').config();
 
 // Create a connection pool instead of single connection
 // Pool automatically handles reconnection and connection management
 const pool = mysql.createPool({
-    host: process.env.HOST,
-    user: process.env.USER,
-    password: process.env.PASSWORD,
-    database: process.env.DATABASE,
+    host: process.env.HOST || 'localhost',
+    user: process.env.USER || 'root',
+    password: process.env.PASSWORD || '',
+    database: process.env.DATABASE || 'slate_db',
     timezone: '+05:30',
     waitForConnections: true,
     connectionLimit: 10,
@@ -20,7 +21,7 @@ const pool = mysql.createPool({
 // Test the connection
 pool.getConnection((err, connection) => {
     if (err) {
-        console.error('Error connecting to the database:', err);
+        console.error('Error connecting to the database:', err.message);
         if (err.code === 'PROTOCOL_CONNECTION_LOST') {
             console.error('Database connection was closed.');
         }
@@ -29,6 +30,9 @@ pool.getConnection((err, connection) => {
         }
         if (err.code === 'ECONNREFUSED') {
             console.error('Database connection was refused.');
+        }
+        if (err.code === 'ER_ACCESS_DENIED_ERROR') {
+            console.error('Access denied. Check your database credentials.');
         }
     }
     if (connection) {
@@ -39,7 +43,7 @@ pool.getConnection((err, connection) => {
 
 // Handle pool errors
 pool.on('error', (err) => {
-    console.error('Database pool error:', err);
+    console.error('Database pool error:', err.message);
 });
 
 // Export the pool with promise support
