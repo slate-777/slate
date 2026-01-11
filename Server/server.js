@@ -5,9 +5,12 @@ const path = require("path");
 const fs = require("fs");
 
 // =============================
-// Load environment variables
+// Load environment variables from Server/.env
 // =============================
-dotenv.config();
+const envPath = path.resolve(__dirname, '.env');
+dotenv.config({ path: envPath });
+console.log('ENV loaded from:', envPath);
+console.log('DOCS_UPLOADS_PATH:', process.env.DOCS_UPLOADS_PATH);
 
 const app = express();
 
