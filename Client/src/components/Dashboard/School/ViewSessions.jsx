@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import EditSessionData from './EditSessionData';
 import { fetchAllSessions, fetchMySessions } from '../ApiHandler/sessionFunctions';
 import { exportToSessionCSV, exportToSessionExcel, exportToPDF, handlePrint } from '../../utils/Utils';
 import usePagination from '../../hooks/usePagination';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 
 const ViewSessions = ({ role, showAllEntities }) => {
     const [sessions, setSessions] = useState([]);
@@ -89,6 +91,50 @@ const ViewSessions = ({ role, showAllEntities }) => {
         setCurrentImageIndex((prev) => (prev - 1 + currentImages.length) % currentImages.length);
     };
 
+    const downloadAllImages = async (images, sessionTitle) => {
+        try {
+            const parsedImages = typeof images === 'string' ? JSON.parse(images) : images;
+            if (!parsedImages || parsedImages.length === 0) {
+                toast.warning('No images to download');
+                return;
+            }
+
+            toast.info('Preparing download...');
+
+            if (parsedImages.length === 1) {
+                // Single image - download directly
+                const response = await fetch(parsedImages[0]);
+                const blob = await response.blob();
+                const extension = parsedImages[0].split('.').pop().split('?')[0] || 'jpg';
+                saveAs(blob, `${sessionTitle || 'session'}_image.${extension}`);
+                toast.success('Image downloaded successfully!');
+            } else {
+                // Multiple images - create zip
+                const zip = new JSZip();
+                const folder = zip.folder(sessionTitle || 'session_images');
+
+                const downloadPromises = parsedImages.map(async (url, index) => {
+                    try {
+                        const response = await fetch(url);
+                        const blob = await response.blob();
+                        const extension = url.split('.').pop().split('?')[0] || 'jpg';
+                        folder.file(`image_${index + 1}.${extension}`, blob);
+                    } catch (error) {
+                        console.error(`Failed to download image ${index + 1}:`, error);
+                    }
+                });
+
+                await Promise.all(downloadPromises);
+                const content = await zip.generateAsync({ type: 'blob' });
+                saveAs(content, `${sessionTitle || 'session'}_images.zip`);
+                toast.success('Images downloaded successfully!');
+            }
+        } catch (error) {
+            console.error('Error downloading images:', error);
+            toast.error('Failed to download images');
+        }
+    };
+
     return (
         <div>
             {editSection && (
@@ -144,6 +190,7 @@ const ViewSessions = ({ role, showAllEntities }) => {
                                         <th>Session Date</th>
                                         <th>Setup By</th>
                                         <th>Images</th>
+                                        <th>Download</th>
                                         {(role === 1 || role === 3 || !showAllEntities) && <th>Action</th>}
                                     </tr>
                                 </thead>
@@ -195,6 +242,30 @@ const ViewSessions = ({ role, showAllEntities }) => {
                                                         </div>
                                                     ) : (
                                                         <span style={{ color: '#999' }}>No images</span>
+                                                    )}
+                                                </td>
+                                                <td>
+                                                    {images.length > 0 ? (
+                                                        <button
+                                                            onClick={() => downloadAllImages(item.session_images, item.session_title)}
+                                                            style={{
+                                                                background: '#28a745',
+                                                                color: 'white',
+                                                                border: 'none',
+                                                                borderRadius: '5px',
+                                                                padding: '8px 12px',
+                                                                cursor: 'pointer',
+                                                                fontSize: '12px',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                gap: '5px'
+                                                            }}
+                                                            title={`Download ${images.length} image(s)`}
+                                                        >
+                                                            📥 Download
+                                                        </button>
+                                                    ) : (
+                                                        <span style={{ color: '#999' }}>-</span>
                                                     )}
                                                 </td>
                                                 {(role === 1 || role === 3 || !showAllEntities) && (
